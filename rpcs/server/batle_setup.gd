@@ -75,18 +75,23 @@ func start_battle(battle_id: int, team_info_final: Dictionary) -> void:
 		player2: player2_formation.serialize()
 	}
 
-	StartBattle.create_battle_field(
+	var battlefield: BattleField = StartBattle.create_battle_field(
 		battle_id,
 		player1,
 		player1_formation,
 		player2,
 		player2_formation,
-		BattlingImpl.notify_first_player_determined.bind(player1, player2),
-		BattlingImpl.notify_turn_started.bind(player1, player2),
-		BattlingImpl.notify_fp_gained.bind(player1, player2),
-		BattlingImpl.notify_fp_spent.bind(player1, player2),
-		BattlingImpl.notify_vivosaur_damaged.bind(player1, player2),
 	)
+
+	battlefield.first_player_determined.connect(BattlingImpl.notify_first_player_determined.bind(player1, player2))
+	battlefield.turn_started.connect(BattlingImpl.notify_turn_started.bind(player1, player2))
+	battlefield.fp_gained.connect(BattlingImpl.notify_fp_gained.bind(player1, player2))
+	battlefield.fp_spent.connect(BattlingImpl.notify_fp_spent.bind(player1, player2))
+	battlefield.vivosaur_damaged.connect(BattlingImpl.notify_vivosaur_damaged.bind(player1, player2))
+	battlefield.vivosaur_swapped_to_ez.connect(BattlingImpl.notify_vivosaur_swapped_to_ez.bind(player1, player2))
+	battlefield.skill_missed.connect(BattlingImpl.notify_skill_missed.bind(player1, player2))
+	battlefield.vivosaur_back_to_sz.connect(BattlingImpl.notify_vivosaur_back_to_sz.bind(player1, player2))
+
 	ClientBattleSetup.notify_battle_start.rpc_id(
 		player1,
 		formations

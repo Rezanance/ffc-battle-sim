@@ -54,3 +54,30 @@ static func notify_vivosaur_damaged(
 	var event_dict: Dictionary[String, Variant] = vivosaur_damaged_event.serialize()
 	ClientBattling.notify_vivosaur_damaged.rpc_id(player1_id, event_dict)
 	ClientBattling.notify_vivosaur_damaged.rpc_id(player2_id, event_dict)
+
+static func notify_vivosaur_swapped_to_ez(
+	vivosaur_swapped_to_ez_event: VivosaurSwappedToEZEvent,
+	player1_id: int,
+	player2_id: int,
+) -> void:
+	var event_dict: Dictionary[String, Variant] = vivosaur_swapped_to_ez_event.serialize()
+	ClientBattling.notify_vivosaur_swapped_to_ez.rpc_id(player1_id, event_dict)
+	ClientBattling.notify_vivosaur_swapped_to_ez.rpc_id(player2_id, event_dict)
+
+static func notify_skill_missed(
+	skill_missed_event: SkillMissedEvent,
+	player1_id: int,
+	player2_id: int,
+) -> void:
+	var event_dict: Dictionary[String, Variant] = skill_missed_event.serialize()
+	ClientBattling.notify_skill_missed.rpc_id(player1_id, event_dict)
+	ClientBattling.notify_skill_missed.rpc_id(player2_id, event_dict)
+
+static func notify_vivosaur_back_to_sz(
+	vivosaur_back_to_sz_event: VivosaurBackToSzEvent,
+	player1_id: int,
+	player2_id: int,
+) -> void:
+	var event_dict: Dictionary[String, Variant] = vivosaur_back_to_sz_event.serialize()
+	ClientBattling.notify_vivosaur_back_to_sz.rpc_id(player1_id, event_dict)
+	ClientBattling.notify_vivosaur_back_to_sz.rpc_id(player2_id, event_dict)

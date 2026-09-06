@@ -9,6 +9,9 @@ signal fp_gained(fp_gained_event: FpGainedEvent)
 signal fp_spent(fp_spent_event: FpSpentEvent)
 signal turn_ended(turn_ended_event: TurnEndedEvent)
 signal vivosaur_damaged(vivosaur_damaged_event: VivosaurDamagedEvent)
+signal vivosaur_swapped_to_ez(vivosaur_swapped_to_ez_event: VivosaurSwappedToEZEvent)
+signal vivosaur_back_to_sz(vivosaur_back_to_sz_event: VivosaurBackToSzEvent)
+signal skill_missed(skill_missed_event: SkillMissedEvent)
 
 var player1_id: int
 var player2_id: int
@@ -41,6 +44,20 @@ func _init(
 		fp_spent.emit(FpSpentEvent.new(player2_id, fp_cost, current_fp))
 	)
 
+	formations[player1_id].vivosaur_swapped_to_ez.connect(func(sz: Formation.Zone) -> void:
+		vivosaur_swapped_to_ez.emit(VivosaurSwappedToEZEvent.new(player1_id, sz))
+	)
+	formations[player2_id].vivosaur_swapped_to_ez.connect(func(sz: Formation.Zone) -> void:
+		vivosaur_swapped_to_ez.emit(VivosaurSwappedToEZEvent.new(player2_id, sz))
+	)
+
+	formations[player1_id].vivosaur_back_to_sz.connect(func() -> void:
+		vivosaur_back_to_sz.emit(VivosaurBackToSzEvent.new(player1_id))
+	)
+	formations[player2_id].vivosaur_back_to_sz.connect(func() -> void:
+		vivosaur_back_to_sz.emit(VivosaurBackToSzEvent.new(player2_id))
+	)
+
 func who_goes_first() -> int:
 	var player_1_total_lp: int = formations[player1_id].calculate_total_lp()
 	var player_2_total_lp: int = formations[player2_id].calculate_total_lp()
@@ -66,6 +83,9 @@ func who_goes_first() -> int:
 
 func start_turn() -> void:
 	turn_started.emit(TurnStartedEvent.new(turn_id))
+
+	formations[turn_id].move_ez_back_to_sz()
+
 	apply_support_effects(turn_id)
 #	TODO activate skills like Auto LP and FP plus
 	
@@ -101,6 +121,23 @@ func apply_support_effects(player_id: int) -> void:
 	if sz2:
 		sz2.apply_support_effects(player_id, Formation.Zone.SZ2, player_az, opponent_az)
 
+func is_hit(initiator: Vivosaur, target: Vivosaur) -> bool:
+	var acc_min_speed: float = initiator.vivosaur_info.stats.accuracy - target.vivosaur_info.stats.evasion
+	var chance: float = 0
+	if acc_min_speed < -10:
+		chance = 0.1
+	elif acc_min_speed >= -10 and acc_min_speed < 0:
+		chance = 0.8 + 0.7 * sin(PI * acc_min_speed / 20)
+	elif acc_min_speed >= 0 and acc_min_speed < 10:
+		chance = 0.8 + 0.2 * sin(PI * acc_min_speed / 20)
+	else:
+		chance = 1
+	
+	var result: bool = randf() <= chance
+	if not result:
+		skill_missed.emit(SkillMissedEvent.new(target.player_id, self.formations[target.player_id].get_vivosaur_zone(target)))
+	return result
+
 func calculate_damage(initiator_player_id: int, initiator: Vivosaur, target: Vivosaur, skill: Skill) -> void:
 	var initiator_formation: Formation = self.formations[initiator_player_id]
 	var target_formation: Formation = self.formations[target.player_id]
@@ -111,7 +148,7 @@ func calculate_damage(initiator_player_id: int, initiator: Vivosaur, target: Viv
 			(initiator_formation.get_vivosaur_zone(initiator) == Zone.AZ and [Zone.SZ1, Zone.SZ2].has(target_formation.get_vivosaur_zone(target)))
 			or ([Zone.SZ1, Zone.SZ2].has(initiator_formation.get_vivosaur_zone(initiator)) and target_formation.get_vivosaur_zone(target) == Zone.AZ)
 		else 1.0)
-	var critical_hit_multiplier: float = 1.5 if randf() <= initiator.vivosaur_info.stats.crit_chance else 1.0
+	var critical_hit_multiplier: float = 1.5 if skill.type != Skill.Type.TEAM_SKILL and randf() <= initiator.vivosaur_info.stats.crit_chance else 1.0
 
 	# Favorable matchup
 	if ((initiator_element == Element.AIR and target_element == Element.WATER)

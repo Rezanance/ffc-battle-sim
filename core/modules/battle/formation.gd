@@ -2,6 +2,8 @@ class_name Formation
 
 signal fp_gained(fp_diff: int, current_fp: int)
 signal fp_spent(fp_cost: int, current_fp: int)
+signal vivosaur_swapped_to_ez(sz: Zone)
+signal vivosaur_back_to_sz()
 
 enum Zone {AZ, SZ1, SZ2, EZ}
 const BASE_FP_RECHARGE: int = 180
@@ -30,12 +32,15 @@ var ez: Vivosaur
 
 var fp: int
 
+var turns_left_in_ez: int
+
 func _init(_az: Vivosaur, _sz1: Vivosaur = null, _sz2: Vivosaur = null) -> void:
 	az = _az
 	sz1 = _sz1
 	sz2 = _sz2
 	ez = null
 	fp = 0
+	turns_left_in_ez = 0
 
 # Server shouldn't send the whole formation data since it can be computed on client side
 # Just for initial formation
@@ -110,5 +115,46 @@ func get_vivosaur_from_zone(zone: Zone) -> Vivosaur:
 	return ez
 		
 
-func swap_to_ez(sz_vivosaur: Vivosaur) -> void:
-	return
+func swap_to_ez(support_zone: Zone) -> void:
+	if ez:
+		Logging.error('Cannot swap to EZ when there is already a vivosaur already in the EZ')
+		return
+	if not sz1 and not sz2:
+		Logging.error('Must have a vivosaur in one of the support zones to swap to EZ')
+		return
+	 
+	ez = az
+	az = get_vivosaur_from_zone(support_zone)
+	
+	ez.attack_modifier = 0
+	ez.defense_modifier = 0
+	ez.accuracy_modifier = 0
+	ez.evasion_modifier = 0
+
+	az.attack_modifier = 0
+	az.defense_modifier = 0
+	az.accuracy_modifier = 0
+	az.evasion_modifier = 0
+
+	if support_zone == Zone.SZ1:
+		sz1 = null
+		vivosaur_swapped_to_ez.emit(Zone.SZ1)
+	else:
+		sz2 = null
+		vivosaur_swapped_to_ez.emit(Zone.SZ2)
+	
+	ez.can_use_skill = false
+
+	turns_left_in_ez = 3
+
+func move_ez_back_to_sz(override_turns_left: bool = false) -> void:
+	if turns_left_in_ez > 0:
+		turns_left_in_ez -= 1
+	
+	if ez != null and (turns_left_in_ez == 0 or override_turns_left):
+		vivosaur_back_to_sz.emit()
+		ez.can_use_skill = true
+		if not sz1:
+			sz1 = ez
+		else:
+			sz2 = ez

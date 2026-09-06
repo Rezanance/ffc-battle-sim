@@ -8,6 +8,9 @@
 [ext_resource type="Texture2D" uid="uid://dilkr16w8cc3l" path="res://client/assets/cursors/5_0.png" id="6_eo74b"]
 [ext_resource type="Texture2D" uid="uid://cn0lxb3cc3rbh" path="res://client/assets/cursors/6_0.png" id="7_h0nod"]
 [ext_resource type="Texture2D" uid="uid://b1y2u2eka8ktr" path="res://client/assets/cursors/7_0.png" id="8_2t2ij"]
+[ext_resource type="Texture2D" uid="uid://donnyydh3q13f" path="res://client/assets/stats/LP_2.webp" id="9_qmaap"]
+[ext_resource type="Texture2D" uid="uid://dngq7c6pise66" path="res://client/assets/miss/miss.png" id="10_wp8cb"]
+[ext_resource type="Texture2D" uid="uid://k0kqppolg6dn" path="res://client/assets/miss/miss_excl.png" id="11_8wsvv"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_vxbgf"]
 shader = ExtResource("1_5wttr")
@@ -78,6 +81,42 @@ tracks/4/keys = {
 "update": 0,
 "values": [Vector2(86, 97)]
 }
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("Miss:visible")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/6/type = "value"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("Miss/!:rotation")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0]
+}
+tracks/7/type = "value"
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/path = NodePath("Miss:position")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(28, 0)]
+}
 
 [sub_resource type="Animation" id="Animation_w7xny"]
 resource_name = "arrow"
@@ -104,6 +143,46 @@ tracks/1/keys = {
 "handle_modes": PackedInt32Array(0, 0, 0),
 "points": PackedFloat32Array(27, -0.25, 0, 0.25, 0, 27, -0.0832324, 0, 0, 0, 27, -0.25, 0, 0.25, 0),
 "times": PackedFloat32Array(0, 0.43333334, 0.75)
+}
+
+[sub_resource type="Animation" id="Animation_wp8cb"]
+resource_name = "miss"
+length = 0.6
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Miss:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Miss/!:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.3),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [1.0471976, 6.2831855]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Miss:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.3, 0.5),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector2(28, 28), Vector2(28, 3), Vector2(28, 58)]
 }
 
 [sub_resource type="Animation" id="Animation_w1ead"]
@@ -159,6 +238,7 @@ tracks/0/keys = {
 _data = {
 &"RESET": SubResource("Animation_jgtk3"),
 &"arrow": SubResource("Animation_w7xny"),
+&"miss": SubResource("Animation_wp8cb"),
 &"pulse": SubResource("Animation_w1ead"),
 &"pulse_modulate": SubResource("Animation_qca3e"),
 &"show_damage": SubResource("Animation_5wttr")
@@ -274,3 +354,54 @@ theme_override_constants/outline_size = 3
 theme_override_fonts/font = SubResource("SystemFont_5wttr")
 theme_override_font_sizes/font_size = 32
 text = "100"
+
+[node name="CurrentLpBubble" type="Panel" parent="." unique_id=1374865400]
+visible = false
+layout_mode = 0
+offset_left = 23.0
+offset_top = 46.0
+offset_right = 118.0
+offset_bottom = 86.0
+mouse_filter = 2
+
+[node name="HBox" type="HBoxContainer" parent="CurrentLpBubble" unique_id=856112135]
+layout_mode = 0
+offset_right = 130.0
+offset_bottom = 40.0
+
+[node name="TextureRect" type="TextureRect" parent="CurrentLpBubble/HBox" unique_id=252747599]
+layout_mode = 2
+texture = ExtResource("9_qmaap")
+expand_mode = 3
+
+[node name="CurrentLp" type="Label" parent="CurrentLpBubble/HBox" unique_id=1985479914]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "600"
+vertical_alignment = 1
+
+[node name="Miss" type="Control" parent="." unique_id=1152635576]
+visible = false
+anchors_preset = 0
+offset_left = 28.0
+offset_right = 68.0
+offset_bottom = 39.9999
+
+[node name="Misslbl" type="TextureRect" parent="Miss" unique_id=1635278295]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+texture = ExtResource("10_wp8cb")
+expand_mode = 3
+stretch_mode = 4
+
+[node name="!" type="TextureRect" parent="Miss" unique_id=957606927]
+layout_mode = 0
+offset_left = 72.0
+offset_top = -18.0
+offset_right = 102.0
+offset_bottom = 42.0
+pivot_offset_ratio = Vector2(0.46, 0.77)
+texture = ExtResource("11_8wsvv")
+expand_mode = 5
+stretch_mode = 4

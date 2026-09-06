@@ -69,6 +69,7 @@ func _initialize_sprite(vivosaur: Vivosaur, sprite: VivosaurSprite) -> void:
 		sprite.get_node('LifeBar/Bg').texture = load('res://client/assets/lifebars/%d.png' % vivosaur_info.element)
 		sprite.pressed.connect(_update_vivosaur_summary.bind(vivosaur))
 		sprite.pressed.connect(_notify_vivosaur_selected.bind(vivosaur))
+		sprite.current_lp_bubble.get_node('HBox').get_node('CurrentLp').text = '%d' % vivosaur.current_lp
 	else:
 		sprite.queue_free()
 
@@ -79,7 +80,8 @@ func _update_vivosaur_summary(vivosaur: Vivosaur) -> void:
 			skills,
 			vivosaur.vivosaur_info.skills,
 			_on_skill_clicked,
-			false
+			false,
+			vivosaur.can_use_skill
 		)
 	else:
 		UIUtils.clear_skills(skills)
@@ -240,3 +242,44 @@ func animate_fp_spent(event: FpSpentEvent) -> void:
 	
 	fp.text = '%d' % (old_fp - event.fp_cost)
 	fp_delta.visible = false
+
+func animate_swap_to_ez(event: VivosaurSwappedToEZEvent) -> void:
+	var tween: Tween = create_tween()
+	var duration: float = 0.5
+	var az_sprite: VivosaurSprite = vivosaur_sprite_zones[Formation.Zone.AZ]
+
+	tween.tween_property(az_sprite, 'position', ez_position.position, duration)
+	tween.parallel()
+	tween.tween_property(vivosaur_sprite_zones[event.support_zone], 'position', az_position.position, duration)
+
+	az_sprite.set_instance_shader_parameter('used_skill', true)
+
+	vivosaur_sprite_zones[Formation.Zone.EZ] = az_sprite
+	vivosaur_sprite_zones[Formation.Zone.AZ] = vivosaur_sprite_zones[event.support_zone]
+	vivosaur_sprite_zones[event.support_zone] = null
+
+	await tween.finished
+
+func animate_back_to_ez() -> void:
+	var tween: Tween = create_tween()
+	var duration: float = 0.5
+	var ez_sprite: VivosaurSprite = vivosaur_sprite_zones[Formation.Zone.EZ]
+
+	var position: Vector2 = sz1_position.position if vivosaur_sprite_zones[Formation.Zone.SZ1] == null else sz2_position.position
+	var zone: Formation.Zone = Formation.Zone.SZ1 if vivosaur_sprite_zones[Formation.Zone.SZ1] == null else Formation.Zone.SZ2
+	tween.tween_property(ez_sprite, 'position', position, duration)
+
+	ez_sprite.set_instance_shader_parameter('used_skill', false)
+
+	vivosaur_sprite_zones[zone] = vivosaur_sprite_zones[Formation.Zone.EZ]
+	vivosaur_sprite_zones[Formation.Zone.EZ] = null
+
+	await tween.finished
+
+
+func animate_miss(event: SkillMissedEvent) -> void:
+	vivosaur_sprite_zones[event.target_zone].animation_player.play('miss')
+
+	await vivosaur_sprite_zones[event.target_zone].animation_player.animation_finished;
+
+	vivosaur_sprite_zones[event.target_zone].animation_player.queue('RESET')

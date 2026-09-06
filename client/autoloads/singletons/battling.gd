@@ -1,6 +1,6 @@
 extends Node
 
-enum UI_STEP {SELECT_SKILL, CHOOSE_TARGET, WAIT_FOR_RESULT, WAIT_FOR_OPPONENT}
+enum UI_STEP {SELECT_ACTION, CHOOSE_SKILL_TARGET, CHOOSE_SWAP_TARGET, WAIT_FOR_SERVER, WAIT_FOR_OPPONENT}
 
 var formations: Dictionary[int, Formation] = {
 	123: Formation.new(
@@ -19,4 +19,4 @@ var selection: VivosaurSelection
 var initiator: Formation.Zone
 var skill_id_selected: String
 var target: VivosaurSelection
-var ui_step: UI_STEP = UI_STEP.WAIT_FOR_OPPONENT
+var ui_step: UI_STEP = UI_STEP.WAIT_FOR_SERVER

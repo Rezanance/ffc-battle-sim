@@ -9,7 +9,7 @@
 [ext_resource type="Resource" uid="uid://bbgm1ar607dbe" path="res://core/data/skills/Brachio/skills/MountainWave/MountainWave.tres" id="5_dqjsn"]
 [ext_resource type="Resource" uid="uid://xta4s0r2nhko" path="res://core/data/skills/Brachio/skills/EarthCrush/EarthCrush.tres" id="6_rns3q"]
 [ext_resource type="Resource" uid="uid://cpymhh6m480y1" path="res://core/data/skills/_common/PowerScale/PowerScale.tres" id="7_w25yx"]
-[ext_resource type="Resource" uid="uid://2c4stsjmu1r1" path="res://core/data/skills/Trex/skills/TyrantsBreath/TyrantsBreath.tres" id="8_vtije"]
+[ext_resource type="Resource" uid="uid://mfns01vim63r" path="res://core/data/skills/Brachio/skills/Voidquake/Voidquake.tres" id="8_hst4b"]
 
 [resource]
 resource_name = "Brachio"
@@ -30,5 +30,5 @@ crit = 15
 own_az = true
 se_atk = -30
 se_acc = -30
-skills = Array[ExtResource("3_yafhp")]([ExtResource("4_hst4b"), ExtResource("5_dqjsn"), ExtResource("6_rns3q"), ExtResource("7_w25yx"), ExtResource("8_vtije")])
+skills = Array[ExtResource("3_yafhp")]([ExtResource("4_hst4b"), ExtResource("5_dqjsn"), ExtResource("6_rns3q"), ExtResource("7_w25yx"), ExtResource("8_hst4b")])
 metadata/_custom_type_script = "uid://bj0qwk3daymcj"

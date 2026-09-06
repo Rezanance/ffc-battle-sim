@@ -33,6 +33,7 @@ func end_turn(battle_id: int) -> void:
 	battlefield.end_turn()
 	battlefield.start_turn()
 
+# TODO move to impl
 @rpc("any_peer", "call_remote", "reliable")
 func use_skill(battle_id: int, initiator_zone: int, skill_id: String, target_player_id: int = -1, target_zone: int = -1) -> void:
 	assert(multiplayer.is_server())
@@ -73,6 +74,35 @@ func use_skill(battle_id: int, initiator_zone: int, skill_id: String, target_pla
 			if not target:
 				Logging.error('Single enemy target skills must specify a target')
 				return
-			battlefield.calculate_damage(initiator_player_id, initiator, target, initiator_skill)
+			if battlefield.is_hit(initiator, target):
+				battlefield.calculate_damage(initiator_player_id, initiator, target, initiator_skill)
+			# TODO: Check if move misses or hits
+		Skill.Target.ENEMY_AZ_AND_SZ:
+			var opponent_id: int = battlefield.get_opponent_id(initiator_player_id)
+			for zone: Formation.Zone in [Formation.Zone.AZ, Formation.Zone.SZ1, Formation.Zone.SZ2]:
+				target = battlefield.formations[opponent_id].get_vivosaur_from_zone(zone)
+				if target and battlefield.is_hit(initiator, target):
+					battlefield.calculate_damage(initiator_player_id, initiator, target, initiator_skill)
+		_:
+			Logging.error('Not implemented yet')
+			return
 	
 	initiator.can_use_skill = false
+
+@rpc("any_peer", "call_remote", "reliable")
+func swap_to_ez(battle_id: int, target_zone: int) -> void:
+	assert(multiplayer.is_server())
+
+	var player_id: int = multiplayer.get_remote_sender_id()
+	var battle_info: BattleInfo = ServerVariables.battles[battle_id]
+	var battlefield: BattleField = battle_info.battlefield
+	
+	if battlefield.turn_id != player_id:
+		Logging.error('Player %d can\'t swap to ez. Not their turn' % player_id)
+		return
+
+	if target_zone == Formation.Zone.AZ:
+		Logging.error('Target zone can only be one of the SZs')
+		return
+	
+	battlefield.formations[player_id].swap_to_ez(target_zone)

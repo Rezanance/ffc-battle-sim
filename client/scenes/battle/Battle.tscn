@@ -15,8 +15,10 @@
 [ext_resource type="Texture2D" uid="uid://dfvvwkkes0jv" path="res://client/assets/player-icons/38.png" id="10_4km6a"]
 [ext_resource type="Texture2D" uid="uid://n1eb8ymkjir1" path="res://client/assets/nameplates/nameplate-player.png" id="11_sc7kr"]
 [ext_resource type="Texture2D" uid="uid://cw3n455nqypfs" path="res://client/assets/start_turn/Attack-player.png" id="12_boaws"]
+[ext_resource type="Texture2D" uid="uid://dyl3rhaghyqu8" path="res://client/assets/arrows/ez_arrow.png" id="12_g3aik"]
 [ext_resource type="Texture2D" uid="uid://o484266p8t2" path="res://client/assets/nameplates/nameplate-opp.png" id="12_sc7kr"]
 [ext_resource type="Texture2D" uid="uid://db0lmn81jwx1g" path="res://client/assets/start_turn/Attack-opponent.png" id="13_2bopn"]
+[ext_resource type="Texture2D" uid="uid://dt2ku5fo2hrq7" path="res://client/assets/arrows/ez_arrow2.png" id="13_skp18"]
 [ext_resource type="Texture2D" uid="uid://kkt40tvwkxrt" path="res://client/assets/back/back.png" id="15_uxlnq"]
 [ext_resource type="Texture2D" uid="uid://bwfb6qqm38exu" path="res://client/assets/ok/ok.png" id="16_bgkx4"]
 [ext_resource type="Texture2D" uid="uid://c5krceuxlhv2n" path="res://client/assets/ok/ok_pressed.png" id="17_xha48"]
@@ -27,9 +29,11 @@
 [ext_resource type="Texture2D" uid="uid://vxumqxjhqcqg" path="res://client/assets/battle/actions/swap_az.png" id="21_oefcp"]
 [ext_resource type="Script" uid="uid://c8my2a42qmla1" path="res://client/modules/logic/multiplayer_components/battling_component.gd" id="22_2k6mw"]
 [ext_resource type="Script" uid="uid://cmamxc3gkd5v0" path="res://client/scenes/battle/modules/TextureManager/texture_manager.gd" id="23_8ltw3"]
+[ext_resource type="Texture2D" uid="uid://b6gqftxuw6a6f" path="res://client/assets/battle/actions/end_turn_disabled.png" id="24_0617l"]
 [ext_resource type="Texture2D" uid="uid://cgwvau3ftmscn" path="res://client/assets/battle/actions/swap_az_hover.png" id="24_ird6i"]
 [ext_resource type="Texture2D" uid="uid://dhqinoc2txy7e" path="res://client/assets/loading/loading.png" id="27_fwcbx"]
 [ext_resource type="Script" uid="uid://ccp74qdnkf5ae" path="res://client/scenes/player_lobby/scenes/loading_conn.gd" id="28_8p5wy"]
+[ext_resource type="Texture2D" uid="uid://do1djj5byw77k" path="res://client/assets/battle/actions/swap_az_disabled.png" id="28_qy8xr"]
 
 [sub_resource type="SystemFont" id="SystemFont_d0b6a"]
 font_names = PackedStringArray("Sans-Serif")
@@ -130,7 +134,69 @@ animations = [{
 "speed": 10.0
 }]
 
-[node name="Battle" type="ColorRect" unique_id=972273508 node_paths=PackedStringArray("battling_component", "player_formation_ui", "opponent_formation_ui", "swap_to_ez_btn", "end_turn_btn", "back_btn", "ok_btn", "waiting_for_server_overlay")]
+[sub_resource type="Animation" id="Animation_g3aik"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("BattleWindow/PlayerFormation/EZ SZ2 Arrow:self_modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("BattleWindow/PlayerFormation/EZ SZ1 Arrow:self_modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_skp18"]
+resource_name = "blink_transparent"
+length = 0.5
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("BattleWindow/PlayerFormation/EZ SZ2 Arrow:self_modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.25, 0.5),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 1), Color(1, 1, 1, 0.16470589), Color(1, 1, 1, 1)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("BattleWindow/PlayerFormation/EZ SZ1 Arrow:self_modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.25, 0.5),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 1), Color(1, 1, 1, 0.16470589), Color(1, 1, 1, 1)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_0617l"]
+_data = {
+&"RESET": SubResource("Animation_g3aik"),
+&"blink_transparent": SubResource("Animation_skp18")
+}
+
+[node name="Battle" type="ColorRect" unique_id=972273508 node_paths=PackedStringArray("battling_component", "player_formation_ui", "opponent_formation_ui", "swap_to_ez_btn", "end_turn_btn", "back_btn", "ok_btn", "waiting_for_server_overlay", "animation_player")]
 offset_right = 1920.0
 offset_bottom = 1080.0
 color = Color(0.8786593, 0.5368116, 0.35264778, 1)
@@ -143,6 +209,7 @@ end_turn_btn = NodePath("BattleWindow/EndTurn")
 back_btn = NodePath("BattleWindow/Back")
 ok_btn = NodePath("BattleWindow/Ok")
 waiting_for_server_overlay = NodePath("WaitingForServerOverlay")
+animation_player = NodePath("AnimationPlayer")
 
 [node name="BattleWindow" type="TextureRect" parent="." unique_id=309800834]
 layout_mode = 1
@@ -223,6 +290,7 @@ offset_right = -217.0
 offset_bottom = 9.0
 
 [node name="SupportEffects" type="TextureRect" parent="BattleWindow/PlayerFormation" unique_id=2090783814]
+z_index = 10
 layout_mode = 0
 offset_left = 248.0
 offset_top = 48.0
@@ -413,6 +481,38 @@ anchors_preset = 0
 offset_left = -334.0
 offset_right = -294.0
 offset_bottom = 40.0
+
+[node name="EZ AZ Arrow" type="TextureRect" parent="BattleWindow/PlayerFormation" unique_id=1886210217]
+visible = false
+layout_mode = 0
+offset_left = 77.0
+offset_top = 220.0
+offset_right = 157.0
+offset_bottom = 260.0
+texture = ExtResource("12_g3aik")
+expand_mode = 3
+
+[node name="EZ SZ2 Arrow" type="TextureRect" parent="BattleWindow/PlayerFormation" unique_id=1115798964]
+visible = false
+layout_mode = 0
+offset_left = 194.0
+offset_top = 312.0
+offset_right = 274.0
+offset_bottom = 392.0
+texture = ExtResource("13_skp18")
+expand_mode = 5
+flip_v = true
+
+[node name="EZ SZ1 Arrow" type="TextureRect" parent="BattleWindow/PlayerFormation" unique_id=910683182]
+visible = false
+z_index = 1
+layout_mode = 0
+offset_left = 208.0
+offset_top = 67.0
+offset_right = 288.0
+offset_bottom = 147.0
+texture = ExtResource("13_skp18")
+expand_mode = 5
 
 [node name="OpponentFormation" type="Control" parent="BattleWindow" unique_id=1592345933 node_paths=PackedStringArray("total_lp_panel", "total_lp_panel_position", "az_position", "sz1_position", "sz2_position", "ez_position", "vivosaur_sprite_1", "vivosaur_sprite_2", "vivosaur_sprite_3", "support_effects", "fp_bg", "fp", "fp_delta", "turn_banner", "turn_banner_start", "texture_manager", "vivosaur_summary", "skills")]
 anchors_preset = 0
@@ -718,6 +818,7 @@ offset_bottom = 445.0
 scale = Vector2(2, 2)
 texture_normal = ExtResource("20_d1s4d")
 texture_hover = ExtResource("21_7iliw")
+texture_disabled = ExtResource("24_0617l")
 script = ExtResource("21_nhhto")
 
 [node name="SwapAZ" type="TextureButton" parent="BattleWindow" unique_id=912669810]
@@ -729,6 +830,7 @@ offset_bottom = 445.0
 scale = Vector2(2, 2)
 texture_normal = ExtResource("21_oefcp")
 texture_hover = ExtResource("24_ird6i")
+texture_disabled = ExtResource("28_qy8xr")
 script = ExtResource("21_nhhto")
 
 [node name="SkillScreen" type="TextureRect" parent="." unique_id=1127375912]
@@ -807,6 +909,9 @@ script = ExtResource("22_2k6mw")
 
 [node name="TextureManager" type="Node" parent="." unique_id=2098311641]
 script = ExtResource("23_8ltw3")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1360768951]
+libraries/ = SubResource("AnimationLibrary_0617l")
 
 [connection signal="pressed" from="BattleWindow/Back" to="." method="on_back_pressed"]
 [connection signal="pressed" from="BattleWindow/Ok" to="." method="on_ok_pressed"]
